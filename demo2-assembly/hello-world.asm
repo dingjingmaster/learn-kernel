@@ -6,13 +6,12 @@
 .global _start
 
 _start:
-    # 注释
-    movq $1, %rax
-    movq $1, %rdi
-    movq $msg, %rsi
+    movq $1, %rax           # 写 系统调用
+    movq $1, %rdi           # 标准输出文件描述符
+    movq $msg, %rsi         # 字符串地址
     movq $12, %rdx
+    syscall                 # 调用 写操作
 
-    syscall
-    movq $60, %rax
-    movq $0, %rdi
-    syscall
+    movq $60, %rax          # exit 调用
+    movq $0, %rdi           # 
+    syscall                 # 调用
