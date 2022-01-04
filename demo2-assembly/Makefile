@@ -1,14 +1,14 @@
 src = $(wildcard *.asm)
 obj = $(patsubst %.asm, %.o, $(src))
-run = $(patsubst %.o, %.run, $(obj))
+run = $(patsubst %.o, %, $(obj))
 
 all : $(run)
 
-%.run : %.o
+% : %.o
 	ld -o $@ $<
 
 %.o : %.asm
-	as -o $@ $<
+	as -o $@ $< 
 
 .PHONY : clean all
 

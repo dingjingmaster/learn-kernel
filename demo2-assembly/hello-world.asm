@@ -3,9 +3,10 @@
 
 .text            
 
-.globl _start
+.global _start
 
 _start:
+    # 注释
     movq $1, %rax
     movq $1, %rdi
     movq $msg, %rsi
