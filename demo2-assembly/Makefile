@@ -4,21 +4,23 @@ run = $(patsubst %.o, %, $(obj))
 
 all : $(run)
 
-# -lc 表示使用 C 库, 纯的汇编不需要链接它
+test-print-arr : test-print-arr.o common.o
+	ld -o $@ $^ -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc
+
 % : %.o
-	ld -o $@ $<
+	ld -o $@ $< 
 
 %.o : %.asm
 	as -g -o $@ $<
 
-#%.o : %.s
-#	as -o $@ $<
+%.o1 : %.s
+	as -g -o $@ $<
 
-#common.s : common.c
-#	gcc -o $@ -S $<
+common.o : common.c
+	gcc -g -o $@ -c $<
 
 .PHONY : clean all
 
 clean :
-	@rm -f *.o common.s
-	rm -f $(run) $(obj)
+	@rm -f *.o
+	rm -f $(run) $(obj) 
