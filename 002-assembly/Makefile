@@ -2,20 +2,15 @@ src = $(wildcard *.asm)
 obj = $(patsubst %.asm, %.o, $(src))
 run = $(patsubst %.o, %, $(obj))
 
-all : $(run)
+src1 = $(wildcard common-*.asm)
+obj1 = $(patsubst %.asm, %.o, $(src1))
+run1 = $(patsubst common-%.asm, common-%, $(src1))
 
-test-print-arr : test-print-arr.o common.o
+all : $(run) $(run1)
+
+
+common-% : common-%.o common.o
 	ld -o $@ $^ -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc
-
-test-hello : test-hello.o common.o
-	ld -o $@ $^ -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc
-
-bubble : bubble.o common.o
-	ld -o $@ $^ -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc
-
-add : add.o common.o
-	ld -o $@ $^ -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc
-
 
 % : %.o
 	ld -o $@ $< 
@@ -33,4 +28,4 @@ common.o : common.c
 
 clean :
 	@rm -f *.o
-	rm -f $(run) $(obj) 
+	rm -f $(run) $(run1)
