@@ -96,12 +96,35 @@ _start:
     divl %ecx                       # AX / CX = 2
     movl %eax, t(%rip)              # t = 2
 
-    movl $0x0, %edx
+    movl $0x0, %edx                 # DX = 0 
+
+    pushaq
+    movl %edx, %edi
+    call print_int                  # t = 1 ?
+    popaq
+
     movl r(%rip), %eax              # r = 5
     movl s(%rip), %ecx              # s = 2
-    divl %ecx
+
+    pushaq
+    movl %edx, %edi
+    call print_int                  # t = 1 
+    popaq
+
+    divl %ecx                       # 需要注意: AX mod CX  == 5 % 2  ==  1  结果 在 DX 里保存
+                                    # FIXME:// 需要重新梳理 寄存器功能，以及各个指令如何与寄存器配合使用
+
+    pushaq
+    movl %edx, %edi
+    call print_int                  # t = 1 
+    popaq
+
     movl %edx, t(%rip)              # t = 0
 
+    pushaq
+    movl %edx, %edi
+    call print_int                  # t = 1 
+    popaq
 
 
     pushaq
@@ -115,7 +138,7 @@ _start:
     call print_int                  # s = 2
 
     movq t(%rip), %rdi
-    call print_int                  # t = 1 ?
+    call print_int                  # t = 1 
 
     movq x(%rip), %rdi
     call print_short                # x = 10

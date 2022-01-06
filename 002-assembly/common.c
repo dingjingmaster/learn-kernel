@@ -31,6 +31,11 @@ void print_float (float f)
     printf ("%f\n", f);
 }
 
+void print_long (long i)
+{
+    printf ("%ld\n", i);
+}
+
 void print_arr_int (int arr[], int len)
 {
     for (int i = 0; i < len; ++i) {
