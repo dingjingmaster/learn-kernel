@@ -11,6 +11,16 @@ void print_hello ()
     printf ("hello\n");
 }
 
+void print_enter ()
+{
+    printf ("\n");
+}
+
+void print_short (short i)
+{
+    printf ("%d\n", i);
+}
+
 void print_int (int i)
 {
     printf ("%d\n", i);
