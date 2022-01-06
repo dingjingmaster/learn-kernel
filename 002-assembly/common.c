@@ -6,6 +6,22 @@
  ************************************************************************/
 #include <stdio.h>
 
+int get_int ()
+{
+    int d = 0;
+    scanf ("%d", d);
+
+    return d;
+}
+
+double get_double ()
+{
+    double d = 0;
+    scanf ("%ld", d);
+
+    return d;
+}
+
 void print_hello ()
 {
     printf ("hello\n");
@@ -48,4 +64,11 @@ void print_arr_int (int arr[], int len)
     }
 
     printf ("\n");
+}
+
+void print_string (const char* s)
+{
+    if (!s) return;
+
+    printf ("%s\n", s);
 }
