@@ -31,6 +31,11 @@ void print_float (float f)
     printf ("%f\n", f);
 }
 
+void print_double (double f)
+{
+    printf ("%f\n", f);
+}
+
 void print_long (long i)
 {
     printf ("%ld\n", i);
