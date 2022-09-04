@@ -1,17 +1,24 @@
 KDIR	= 	/lib/modules/$(shell uname -r)/build
 PWD		:=	$(shell pwd)
 
-all		: modules
+all		: aufs coretemp
 
-modules :
-	make -C $(KDIR) M=$(PWD)/demo1-coretemp modules
+
+coretemp:
+	make -C $(KDIR) M=$(PWD)/001-coretemp modules
+
+aufs	:
+	make -C $(KDIR) M=$(PWD)/006-aufs modules
+
 
 clean	:
-	rm */*.o
-	rm */*.mod
-	rm */*.ko
-	rm */*.mod.c
-	rm */*.order
-	rm */*.symvers
+	rm -f */*.o
+	rm -f */*.mod
+	rm -f */*.ko
+	rm -f */*.mod.c
+	rm -f */*.order
+	rm -f */*.symvers
+	rm -f `find -name "*.o.*"`
+	rm -f `find -name "*.cmd"`
 
 .PHONY 	: clean
