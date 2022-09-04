@@ -1,9 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- *	include/linux/aufs_fs.h - BFS data structures on disk.
- *	Copyright (C) 1999-2018 Tigran Aivazian <aivazian.tigran@gmail.com>
- */
-
 #ifndef _LINUX_MY_FS_H
 #define _LINUX_MY_FS_H
 
