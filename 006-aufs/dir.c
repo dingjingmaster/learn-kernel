@@ -1,11 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *	fs/bfs/dir.c
- *	BFS directory operations.
- *	Copyright (C) 1999-2018  Tigran Aivazian <aivazian.tigran@gmail.com>
- *  Made endianness-clean by Andrew Stribblehill <ads@wompom.org> 2005
- */
-
 #include <linux/time.h>
 #include <linux/string.h>
 #include <linux/fs.h>
@@ -14,6 +6,7 @@
 #include "aufs.h"
 
 #undef DEBUG
+#define DEBUG 1
 
 #ifdef DEBUG
 #define dprintf(x...)	printf(x)

@@ -1,20 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *	fs/bfs/file.c
- *	BFS file operations.
- *	Copyright (C) 1999-2018 Tigran Aivazian <aivazian.tigran@gmail.com>
- *
- *	Make the file block allocation algorithm understand the size
- *	of the underlying block device.
- *	Copyright (C) 2007 Dmitri Vorobiev <dmitri.vorobiev@gmail.com>
- *
- */
-
 #include <linux/fs.h>
 #include <linux/buffer_head.h>
 #include "aufs.h"
 
 #undef DEBUG
+#define DEBUG 1
 
 #ifdef DEBUG
 #define dprintf(x...)	printf(x)
