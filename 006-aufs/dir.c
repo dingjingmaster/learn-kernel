@@ -174,8 +174,9 @@ static int aufs_unlink(struct inode *dir, struct dentry *dentry)
 
     mutex_lock(&info->aufs_lock);
     bh = aufs_find_entry(dir, &dentry->d_name, &de);
-    if (!bh || (le16_to_cpu(de->ino) != inode->i_ino))
+    if (!bh || (le16_to_cpu(de->ino) != inode->i_ino)) {
         goto out_brelse;
+    }
 
     if (!inode->i_nlink) {
         printf("unlinking non-existent file %s:%lu (nlink=%d)\n",

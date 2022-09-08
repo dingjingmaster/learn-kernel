@@ -39,8 +39,8 @@ static inline struct aufs_inode_info *aufs_I(struct inode *inode)
     printk(KERN_ERR "AUFS-fs: %s(): " format, __func__, ## args)
 
 /* inode.c */
-extern struct inode *aufs_iget(struct super_block *sb, unsigned long ino);
-extern void aufs_dump_imap(const char *, struct super_block *);
+extern struct inode *aufs_iget(struct super_block* sb, unsigned long ino);
+extern void aufs_dump_imap(const char*, struct super_block*);
 
 /* file.c */
 extern const struct inode_operations aufs_file_inops;
@@ -50,5 +50,9 @@ extern const struct address_space_operations aufs_aops;
 /* dir.c */
 extern const struct inode_operations aufs_dir_inops;
 extern const struct file_operations aufs_dir_operations;
+
+
+static int aufs_mount_count = 0;
+static struct vfsmount* aufs_mount;
 
 #endif /* _FS_aufs_aufs_H */

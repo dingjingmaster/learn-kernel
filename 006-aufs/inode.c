@@ -30,10 +30,13 @@ struct inode *aufs_iget(struct super_block *sb, unsigned long ino)
     int block, off;
 
     inode = iget_locked(sb, ino);
-    if (!inode)
+    if (!inode) {
         return ERR_PTR(-ENOMEM);
-    if (!(inode->i_state & I_NEW))
+    }
+
+    if (!(inode->i_state & I_NEW)) {
         return inode;
+    }
 
     if ((ino < aufs_ROOT_INO) || (ino > aufs_SB(inode->i_sb)->si_lasti)) {
         printf("Bad inode number %s:%08lx\n", inode->i_sb->s_id, ino);
@@ -62,17 +65,17 @@ struct inode *aufs_iget(struct super_block *sb, unsigned long ino)
         inode->i_mapping->a_ops = &aufs_aops;
     }
 
-    aufs_I(inode)->i_sblock =  le32_to_cpu(di->i_sblock);
-    aufs_I(inode)->i_eblock =  le32_to_cpu(di->i_eblock);
+    aufs_I(inode)->i_sblock = le32_to_cpu(di->i_sblock);
+    aufs_I(inode)->i_eblock = le32_to_cpu(di->i_eblock);
     aufs_I(inode)->i_dsk_ino = le16_to_cpu(di->i_ino);
     i_uid_write(inode, le32_to_cpu(di->i_uid));
-    i_gid_write(inode,  le32_to_cpu(di->i_gid));
+    i_gid_write(inode, le32_to_cpu(di->i_gid));
     set_nlink(inode, le32_to_cpu(di->i_nlink));
     inode->i_size = aufs_FILESIZE(di);
     inode->i_blocks = aufs_FILEBLOCKS(di);
-    inode->i_atime.tv_sec =  le32_to_cpu(di->i_atime);
-    inode->i_mtime.tv_sec =  le32_to_cpu(di->i_mtime);
-    inode->i_ctime.tv_sec =  le32_to_cpu(di->i_ctime);
+    inode->i_atime.tv_sec = le32_to_cpu(di->i_atime);
+    inode->i_mtime.tv_sec = le32_to_cpu(di->i_mtime);
+    inode->i_ctime.tv_sec = le32_to_cpu(di->i_ctime);
     inode->i_atime.tv_nsec = 0;
     inode->i_mtime.tv_nsec = 0;
     inode->i_ctime.tv_nsec = 0;
@@ -102,7 +105,7 @@ static struct aufs_inode *find_inode(struct super_block *sb, u16 ino, struct buf
         return ERR_PTR(-EIO);
     }
 
-    return (struct aufs_inode *)(*p)->b_data +  ino % aufs_INODES_PER_BLOCK;
+    return (struct aufs_inode *)(*p)->b_data + ino % aufs_INODES_PER_BLOCK;
 }
 
 static int aufs_write_inode(struct inode *inode, struct writeback_control *wbc)
@@ -257,25 +260,6 @@ static void init_once(void *foo)
 
     inode_init_once(&bi->vfs_inode);
 }
-
-static int __init init_inodecache(void)
-{
-    aufs_inode_cachep = kmem_cache_create("aufs_inode_cache", sizeof(struct aufs_inode_info), 0, (SLAB_RECLAIM_ACCOUNT|SLAB_MEM_SPREAD|SLAB_ACCOUNT), init_once);
-
-    if (aufs_inode_cachep == NULL) {
-        return -ENOMEM;
-    }
-
-    return 0;
-}
-
-static void destroy_inodecache(void)
-{
-    rcu_barrier();
-    kmem_cache_destroy(aufs_inode_cachep);
-}
-
-
 
 
 static const struct super_operations aufs_sops = 
@@ -472,51 +456,39 @@ out:
     return ret;
 }
 
-static struct dentry *aufs_mount(struct file_system_type *fs_type, int flags, const char *dev_name, void *data)
-{
-    return mount_bdev(fs_type, flags, dev_name, data, aufs_fill_super);
-}
-
-
-
-
-
-
 static struct file_system_type aufs_fs_type = 
 {
     .owner          = THIS_MODULE,
     .name           = "aufs",
-    .mount          = aufs_mount,
     .kill_sb        = kill_block_super,
-    .fs_flags       = FS_REQUIRES_DEV,
+    //.fs_flags       = FS_REQUIRES_DEV,
 };
 MODULE_ALIAS_FS("aufs");
 
 static int __init init_aufs_fs(void)
 {
-    int err = init_inodecache();
-    if (err) {
-        goto out1;
-    }
-
-    err = register_filesystem(&aufs_fs_type);
+    int err = register_filesystem(&aufs_fs_type);
     if (err) {
         goto out;
     }
 
+    // mount
+    aufs_mount = kern_mount (&aufs_fs_type);
+    if (IS_ERR(aufs_mount)) {
+        printk (KERN_ERR "aufs: could not mount!\n");
+        unregister_filesystem (&aufs_fs_type);
+        goto out;
+    }
+
     return 0;
+
 out:
-
-    destroy_inodecache();
-out1:
-
     return err;
 }
 
 static void __exit exit_aufs_fs(void)
 {
     unregister_filesystem(&aufs_fs_type);
-    destroy_inodecache();
 }
 
 module_init(init_aufs_fs)
