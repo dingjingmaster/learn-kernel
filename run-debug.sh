@@ -4,6 +4,26 @@
 
 set -eu
 
+sudo -v
+
+tapName='ktap0'
+
+echo 'Please check you system, you have create net dev "virbr0"'
+
+add_tap()
+{
+    sudo ip tuntap add dev $tapName mode tap
+    sudo ip link set $tapName master virbr0
+    sudo ip addr add 192.168.122.254/24 dev $tapName
+    sudo ip link set $tapName up
+}
+
+del_tap()
+{
+    sudo ip link set $tapName down
+    sudo ip tuntap del dev $tapName mode tap
+}
+
 print_help()
 {
     local usagetext
@@ -49,27 +69,9 @@ check_kernel()
 
 run_image()
 {
-#    if [[ "$boot_type" == 'uefi' ]]; then
-#        copy_ovmf_vars
-#        if [[ "${secure_boot}" == 'on' ]]; then
-#            printf '%s\n' 'Using Secure Boot'
-#            local ovmf_code='/usr/share/edk2-ovmf/x64/OVMF_CODE.secboot.fd'
-#        else
-#            local ovmf_code='/usr/share/edk2-ovmf/x64/OVMF_CODE.fd'
-#        fi
-#        qemu_options+=(
-#            '-drive' "if=pflash,format=raw,unit=0,file=${ovmf_code},readonly"
-#            '-drive' "if=pflash,format=raw,unit=1,file=${working_dir}/OVMF_VARS.fd"
-#            '-global' "driver=cfi.pflash01,property=secure,value=${secure_boot}"
-#        )
-#    fi
+    trap del_tap EXIT
 
-#    if [[ "${accessibility}" == 'on' ]]; then
-#        qemu_options+=(
-#            '-chardev' 'braille,id=brltty'
-#            '-device' 'usb-braille,id=usbbrl,chardev=brltty'
-#        )
-#    fi
+    add_tap
 
     qemu-system-x86_64 \
         -k en \
@@ -77,23 +79,9 @@ run_image()
         -hda "$image" \
         -display sdl \
         -append "root=/dev/sda console=ttyS0 nokaslr ro" \
+        -netdev tap,id=knet0,ifname=$tapName,script=no,downscript=no -device virtio-net-pci,netdev=knet0 \
         -nographic \
-        -s -S
-
-#        -enable-kvm \
-#        -no-reboot \
-#        -serial stdio \
-#        -global ICH9-LPC.disable_s3=1 \
-#        -vga virtio \
-#        -name kernel-debug,process=kernel-debug \
-#        -m "size=3072,slots=0,maxmem=$((3072*1024*1024))" \
-#        "${qemu_options[@]}" \
-#        -audiodev pa,id=snd0 \
-#        -device ich9-intel-hda \
-#        -device hda-output,audiodev=snd0 \
-#        -device virtio-net-pci,romfile=,netdev=net0 -netdev user,id=net0 \
-#        -machine type=q35,smm=on,accel=kvm,usb=on,pcspk-audiodev=snd0 \
-# -boot order=d,menu=on,reboot-timeout=5000 
+#        -s -S
 }
 
 set_image()
