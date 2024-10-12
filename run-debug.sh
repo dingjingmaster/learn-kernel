@@ -76,7 +76,7 @@ run_image()
         -kernel "$kernel" \
         -hda "$image" \
         -display sdl \
-        -append "root=/dev/sda console=ttyS0 nokaslr rw" \
+        -append "root=/dev/sda console=ttyS0 nokaslr ro" \
         -nographic \
         -s -S
 
