@@ -1,3 +1,4 @@
+bzImage
 *.ko
 *.o
 *.mod
